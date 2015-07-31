@@ -1,0 +1,223 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 /* Project object */ = {
+		activeArchitecture = i386;
+		activeBuildConfigurationName = Release;
+		activeExecutable = 626369E20A53D0C7000DA064 /* meshparam */;
+		activeTarget = 8DD76FA90486AB0100D96B5E /* meshparam */;
+		breakpoints = (
+			62636A590A53F747000DA064 /* main.c:1108 */,
+			62636A970A540278000DA064 /* main.c:1087 */,
+			6206EAE20B985564000C4CFE /* main.c:1015 */,
+			6206EAF70B985661000C4CFE /* main.c:1078 */,
+			6206EB230B985794000C4CFE /* main.c:895 */,
+		);
+		codeSenseManager = 626369F30A53D0D2000DA064 /* Code sense */;
+		executables = (
+			626369E20A53D0C7000DA064 /* meshparam */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					211,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					298,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 271775286;
+			PBXWorkspaceStateSaveDate = 271775286;
+		};
+		perUserProjectItems = {
+			623C39381032EFCF00A55E87 /* PBXTextBookmark */ = 623C39381032EFCF00A55E87 /* PBXTextBookmark */;
+			623C39521032FAD400A55E87 /* PBXTextBookmark */ = 623C39521032FAD400A55E87 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 626369F20A53D0D2000DA064 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	08FB7796FE84155DC02AAC07 /* main.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1064, 25046}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 727}";
+			sepNavVisRect = "{{2, 22362}, {521, 668}}";
+		};
+	};
+	6206EAE20B985564000C4CFE /* main.c:1015 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 08FB7796FE84155DC02AAC07 /* main.c */;
+		functionName = "em_textureCoordinatesFE()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 1015;
+		modificationTime = 194534006.191697;
+		state = 1;
+	};
+	6206EAF70B985661000C4CFE /* main.c:1078 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 08FB7796FE84155DC02AAC07 /* main.c */;
+		functionName = "em_textureCoordinatesFE()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 1078;
+		modificationTime = 194534006.191633;
+		state = 1;
+	};
+	6206EB230B985794000C4CFE /* main.c:895 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 08FB7796FE84155DC02AAC07 /* main.c */;
+		functionName = "msh_laplace_fe()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 895;
+		modificationTime = 194534006.191751;
+		state = 1;
+	};
+	623C39381032EFCF00A55E87 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 08FB7796FE84155DC02AAC07 /* main.c */;
+		name = "main.c: 368";
+		rLen = 4;
+		rLoc = 7034;
+		rType = 0;
+		vrLen = 914;
+		vrLoc = 6361;
+	};
+	623C39521032FAD400A55E87 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 08FB7796FE84155DC02AAC07 /* main.c */;
+		name = "main.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 727;
+		vrLoc = 0;
+	};
+	626369E20A53D0C7000DA064 /* meshparam */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+			YES,
+			NO,
+		);
+		argumentStrings = (
+			"--nt 67236 --np 33620 -p /Users/roberto/Applications/meshparam/_socios/verts-33620.txt -t /Users/roberto/Applications/meshparam/_socios/tris-67236.txt -o /Users/roberto/Applications/meshparam/_socios/param.txt",
+			"--nt 6556 --np 3280 -p /Users/roberto/Documents/2006_06ColinBrain/ultimate_colin_surf_verts.txt -t /Users/roberto/Documents/2006_06ColinBrain/ultimate_colin_surf_trians.txt -o /Users/roberto/Desktop/ultimate_colin_surf_param.txt",
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = meshparam;
+		savedGlobals = {
+		};
+		sourceDirectories = (
+		);
+	};
+	626369F20A53D0D2000DA064 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+		scmType = "";
+	};
+	626369F30A53D0D2000DA064 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	62636A590A53F747000DA064 /* main.c:1108 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 08FB7796FE84155DC02AAC07 /* main.c */;
+		functionName = "em_textureCoordinatesFE()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 1108;
+		modificationTime = 194534006.191547;
+		state = 1;
+	};
+	62636A970A540278000DA064 /* main.c:1087 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 08FB7796FE84155DC02AAC07 /* main.c */;
+		functionName = "em_textureCoordinatesFE()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 1087;
+		modificationTime = 194534006.191804;
+		state = 1;
+	};
+	8DD76FA90486AB0100D96B5E /* meshparam */ = {
+		activeExec = 0;
+		executables = (
+			626369E20A53D0C7000DA064 /* meshparam */,
+		);
+	};
+}

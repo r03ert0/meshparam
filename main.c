@@ -5,6 +5,7 @@ char version[]="meshparam, version 2, roberto toro, 12 August 2009";
 #include <stdlib.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <string.h>
 
 #pragma mark -
 #pragma mark [  Misc   ]
@@ -12,6 +13,10 @@ char version[]="meshparam, version 2, roberto toro, 12 August 2009";
 #pragma mark --- Structures
 #define SIZESTACK	32
 #define pi 3.14159265358979323846264
+
+#define kText 1
+#define kPly  2
+
 typedef struct
 {
 	float	x,y,z;
@@ -47,7 +52,7 @@ typedef struct {
 	char		name[256];
 
 	long		xcontainer;	// extra data container
-}MeshRec, *MeshPtr;
+}Mesh, *MeshPtr;
 typedef struct {
 	int	nd;		// number of data
 	int	sd;		// size in bytes of each datum
@@ -160,7 +165,7 @@ float3D cross3D(float3D a, float3D b)
     xx.z = a.x*b.y - a.y*b.x;
     return(xx);
 }
-float tTriArea(MeshPtr m, int nt)
+float tTriArea(Mesh *m, int nt)
 {
 	float3D	*p;
 	int3D	*t;
@@ -180,7 +185,7 @@ bool msh_new(MeshPtr *m, int np, int nt)
     int		i;
     char	name[]=" untitled mesh";
     
-    *m = (MeshPtr)calloc(1,sizeof(MeshRec));
+    *m = (MeshPtr)calloc(1,sizeof(Mesh));
     if(*m==NULL)	isGood=false;
 
     (**m).np = np;
@@ -368,7 +373,7 @@ void msh_setEdges(MeshPtr m)
 		else	msh_storeEdge(E,&n,(int2D){a,c});
 		
 		if(n>(*m).nt*3/2)
-			printf("more edges than what we can handle");
+			printf("more edges than what we can handle: %i edges, but %i triangles (mesh is likely non-manifold)\n",n,m->nt);
 	}
 }
 int2D* msh_getEdgesPtr(MeshPtr m)
@@ -1516,14 +1521,258 @@ void em_sphereFromTxtr(MeshPtr m, float3D *C)
 #pragma mark [   Main   ]
 static struct option long_options[] =
 {
-	{"np",		required_argument,	0, 'a'},
-	{"nt",		required_argument,	0, 'b'},
-	{"points",	required_argument,	0, 'p'},
-	{"trians",	required_argument,	0, 't'},
+	{"input",	required_argument,	0, 'i'},
 	{"output",	required_argument,	0, 'o'},
 	{"help",	no_argument,		0, 'h'},
 	{0, 0, 0, 0}
 };
+int getformatindex(char *path)
+{
+    char    *formats[]={"txt","ply"};
+    int     i,n=2; // number of recognised formats
+    int     found,index;
+    char    *extension;
+
+    for(i=strlen(path);i>=0;i--)
+    if(path[i]=='.')
+    break;
+    if(i==0)
+    {
+        printf("ERROR: Unable to find the format extension\n");
+        return 0;
+    }
+    extension=path+i+1;
+
+    for(i=0;i<n;i++)
+    {
+        found=(strcmp(formats[i],extension)==0);
+        if(found)
+            break;
+    }
+
+    index=-1;
+    if(i==0)
+    {
+        index=kText;
+        printf("Format: Text mesh\n");
+    }
+    else
+    if(i==1)
+    {
+        index=kPly;
+        printf("Format: Ply mesh\n");
+    }
+
+    return index;
+}
+int Text_load(char *path, Mesh **m)
+{
+    int     np;
+    int     nt;
+    float3D *p;
+    int3D   *t;
+    FILE    *f;
+    int     i;
+    char    str[512];
+    
+    f=fopen(path,"r");
+    if(f==NULL){printf("ERROR: Cannot open file\n");return 1;}
+    
+    // READ HEADER
+    fgets(str,511,f);
+    sscanf(str," %i %i ",&np,&nt);
+    
+    msh_new(m,np,nt);
+    p=(*m)->p;
+    t=(*m)->t;
+    
+    // mesh file
+    // READ VERTICES
+    for(i=0;i<np;i++)
+        fscanf(f," %f %f %f ",&(p[i].x),&(p[i].y),&(p[i].z));
+    printf("Read %i vertices\n",np);
+    
+    // READ TRIANGLES
+    for(i=0;i<nt;i++)
+        fscanf(f," %i %i %i ",&(t[i].a),&(t[i].b),&(t[i].c));
+    printf("Read %i triangles\n",nt);
+    
+    fclose(f);
+    
+    return 0;
+}
+int Text_save_mesh(char *path, Mesh *m)
+{
+    int     *np=&(m->np);
+    int     *nt=&(m->nt);
+    float3D *p=m->p;
+    int3D   *t=m->t;
+    FILE    *f;
+    int     i;
+    
+    f=fopen(path,"w");
+    if(f==NULL){printf("ERROR: Cannot open file\n");return 1;}
+    
+    // WRITE HEADER
+    fprintf(f,"%i %i\n",*np,*nt);
+    
+    // WRITE VERTICES
+    for(i=0;i<*np;i++)
+        fprintf(f,"%f %f %f\n",p[i].x,p[i].y,p[i].z);
+    
+    // WRITE TRIANGLES
+    for(i=0;i<*nt;i++)
+        fprintf(f,"%i %i %i\n",t[i].a,t[i].b,t[i].c);
+    
+    fclose(f);
+    
+    return 0;
+}
+int Ply_load(char *path, Mesh **m)
+{
+    int     np;
+    int     nt;
+    float3D *p;
+    int3D   *t;
+    FILE    *f;
+    int     i,x;
+    char    str[512],str1[256],str2[256];
+    
+    f=fopen(path,"r");
+    if(f==NULL){printf("ERROR: Cannot open file\n");return 1;}
+    
+    // READ HEADER
+    np=nt=0;
+    do
+    {
+        fgets(str,511,f);
+        sscanf(str," %s %s %i ",str1,str2,&x);
+        if(strcmp(str1,"element")==0&&strcmp(str2,"vertex")==0)
+            np=x;
+        else
+            if(strcmp(str1,"element")==0&&strcmp(str2,"face")==0)
+                nt=x;
+    }
+    while(strcmp(str1,"end_header")!=0 && !feof(f));
+    if(np*nt==0)
+    {
+        printf("ERROR: Bad Ply file header format\n");
+        return 1;
+    }
+
+    msh_new(m,np,nt);
+    p=(*m)->p;
+    t=(*m)->t;
+    
+    // READ VERTICES
+    for(i=0;i<np;i++)
+        fscanf(f," %f %f %f ",&(p[i].x),&(p[i].y),&(p[i].z));
+    printf("Read %i vertices\n",np);
+    
+    // READ TRIANGLES
+    for(i=0;i<nt;i++)
+        fscanf(f," 3 %i %i %i ",&(t[i].a),&(t[i].b),&(t[i].c));
+    printf("Read %i triangles\n",nt);
+    
+    fclose(f);
+    
+    return 0;
+}
+int Ply_save_mesh(char *path, Mesh *m)
+{
+    int     *np=&(m->np);
+    int     *nt=&(m->nt);
+    float3D *p=m->p;
+    int3D   *t=m->t;
+    FILE    *f;
+    int     i;
+    
+    f=fopen(path,"w");
+    if(f==NULL){printf("ERROR: Cannot open file\n");return 1;}
+    
+    // WRITE HEADER
+    fprintf(f,"ply\n");
+    fprintf(f,"format ascii 1.0\n");
+    fprintf(f,"comment meshconvert, R. Toro 2010\n");
+    fprintf(f,"element vertex %i\n",*np);
+    fprintf(f,"property float x\n");
+    fprintf(f,"property float y\n");
+    fprintf(f,"property float z\n");
+    fprintf(f,"element face %i\n",*nt);
+    fprintf(f,"property list uchar int vertex_indices\n");
+    fprintf(f,"end_header\n");
+    
+    // WRITE VERTICES
+    for(i=0;i<*np;i++)
+        fprintf(f,"%f %f %f\n",p[i].x,p[i].y,p[i].z);
+    
+    // WRITE TRIANGLES
+    for(i=0;i<*nt;i++)
+        fprintf(f,"3 %i %i %i\n",t[i].a,t[i].b,t[i].c);
+    
+    fclose(f);
+    
+    return 0;
+}
+int loadMesh(char *path, Mesh **m,int iformat)
+{
+    int        err,format;
+    
+    if(iformat==0)
+        format=getformatindex(path);
+    else
+        format=iformat;
+    
+    switch(format)
+    {
+        case kText:
+            err=Text_load(path,m);
+            break;
+        case kPly:
+            err=Ply_load(path,m);
+            break;
+        default:
+            printf("ERROR: Input mesh format not recognised\n");
+            return 1;
+    }
+    if(err!=0)
+    {
+        printf("ERROR: cannot read file: %s\n",path);
+        return 1;
+    }
+    
+    return 0;
+}
+int saveMesh(char *path, Mesh *m, int oformat)
+{
+    int    err=0,format;
+    
+    if(oformat==0)
+        format=getformatindex(path);
+    else
+        format=oformat;
+    
+    switch(format)
+    {
+        case kText:
+            err=Text_save_mesh(path,m);
+            break;
+        case kPly:
+            err=Ply_save_mesh(path,m);
+            break;
+        default:
+            printf("ERROR: Output data format not recognised\n");
+            err=1;
+            break;
+    }
+    if(err!=0)
+    {
+        printf("ERROR: cannot write to file: %s\n",path);
+        return 1;
+    }
+    
+    return 0;
+}
 void print_help(void)
 {
 	printf("--------------\n");
@@ -1532,27 +1781,22 @@ void print_help(void)
 	printf("Usage 1. meshparam --np npoints --nt ntriangles -p path_to_points -t path_to_triangles -o output_file\n");
 	printf("Usage 2. meshparam -h\n");
 	printf("-h --help           Print this help\n");
-	printf("--np npoints        Number of points (vertices)\n");
-	printf("--nt ntriangles     Number of triangles\n");
-	printf("-p --points path    Path to a text file listing the mesh points\n");
-	printf("-t --trians path    Path to a text file listing the mesh triangles\n");
+	printf("-i --input path     Input mesh in txt or ply format\n");
+	printf("-o --output path    Output mesh (spherical parametrisation)\n");
 	printf("--------------\n");
 	printf("Ref. Toro, R. and Burnod, Y. (2003) NeuroImage\n");
 	printf("\n");
 }
 int main (int argc, char **argv)
 {
-	int		c;
+	int		i,c;
 	int		option_index=0;
-	char	*ppath=NULL,*tpath,*opath;
-	FILE	*f;
-	char	str[256];
-	int		i,np,nt;
+	char	*ipath=NULL,*opath;
 
 	printf("%s\n",version);
 	while (1)
 	{
-		c = getopt_long (argc, argv, "a:b:p:t:o:h",long_options, &option_index);
+		c = getopt_long (argc, argv, "i:o:h",long_options, &option_index);
 
 		/* Detect the end of the options. */
 		if (c == -1)
@@ -1560,17 +1804,8 @@ int main (int argc, char **argv)
 
 		switch (c)
 		{
-			case 'a':
-				np=atoi(optarg);
-				break;
-			case 'b':
-				nt=atoi(optarg);
-				break;
-			case 'p':
-				ppath=optarg;
-				break;
-			case 't':
-				tpath=optarg;
+			case 'i':
+                ipath=optarg;
 				break;
 			case 'o':
 				opath=optarg;
@@ -1587,55 +1822,24 @@ int main (int argc, char **argv)
 		}
 	}
 	
-	if(ppath==NULL)
+	if(ipath==NULL)
 	{
 		print_help();
 		return 0;
 	}
 
-	MeshRec	*m;
-	msh_new(&m,np,nt);
-	
-	// check mesh's euler characteristic e=np-nt/2
-	if(np-nt/2.0!=2)
-	{
-		printf("ERROR: Mesh is not genus 0.\n       Euler characteristic should be 2, but is %.2f.\n       Check for holes or handles.\n       meshparam will exit.",np-nt/2.0);
-		msh_dispose(m);
-		abort();
-	}
-	
-	// load points
-	f=fopen(ppath,"r");
-	for(i=0;i<np;i++)
-	{
-		fgets(str,255,f);
-		sscanf(str," %f %f %f ",&((*m).p[i].x),&((*m).p[i].y),&((*m).p[i].z));
-	}
-	fclose(f);
+	Mesh	*m;
 
-	// load triangles
-	f=fopen(tpath,"r");
-	for(i=0;i<nt;i++)
-	{
-		fgets(str,255,f);
-		sscanf(str," %i %i %i ",&((*m).t[i].a),&((*m).t[i].b),&((*m).t[i].c));
-	}
-	fclose(f);
-	
-	update(m);
+    printf("call: ");
+    for(i=0;i<argc;i++)
+        printf("%s ",argv[i]);
+    printf("\n");
+    
+    loadMesh(ipath,&m,0);
+    update(m);
 	em_textureCoordinatesFE(m);
 	em_sphereFromTxtr(m,msh_getTexturePtr(m));
-	
-	// save sphere
-	f=fopen(opath,"w");
-	fprintf(f,"%i %i\n",(*m).np,(*m).nt);
-	for(i=0;i<np;i++)
-		fprintf(f,"%f %f %f\n",(*m).p[i].x,(*m).p[i].y,(*m).p[i].z);
-	for(i=0;i<nt;i++)
-		fprintf(f,"%i %i %i\n",(*m).t[i].a,(*m).t[i].b,(*m).t[i].c);
-	fclose(f);
-
-	msh_dispose(m);
+    saveMesh(opath,m,0);
 	
 	printf("done.\n");
 	

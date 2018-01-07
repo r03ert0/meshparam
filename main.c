@@ -11,7 +11,7 @@ char version[]="meshparam, version 2, roberto toro, 12 August 2009";
 #pragma mark [  Misc   ]
 
 #pragma mark --- Structures
-#define SIZESTACK	32
+#define SIZESTACK 32
 #define pi 3.14159265358979323846264
 
 #define kText 1
@@ -19,48 +19,48 @@ char version[]="meshparam, version 2, roberto toro, 12 August 2009";
 
 typedef struct
 {
-    float	x,y,z;
+    float x,y,z;
 }float3D;
 typedef struct
 {
-    int	a,b,c;
+    int a,b,c;
 }int3D;
 typedef struct
 {
     int a,b;
 }int2D;
 typedef struct {
-    float3D	siz;
-    float3D	ide;
+    float3D siz;
+    float3D ide;
 }rect3D, *rect3DPtr;
 typedef struct {
-    int		n;
-    int		t[SIZESTACK];
+    int n;
+    int t[SIZESTACK];
 }NTriRec, *NtriPtr;
 typedef struct {
-    int		n;
-    int		e[SIZESTACK];
+    int n;
+    int e[SIZESTACK];
 }NEdgeRec, *NEdgePtr;
 typedef struct {
-    int			np;
-    int			nt;
-    float3D		*p;
-    int3D		*t;
+    int     np;
+    int     nt;
+    float3D *p;
+    int3D   *t;
 
-    float3D		center;
-    rect3D		bbox;
-    char		name[256];
+    float3D     center;
+    rect3D      bbox;
+    char        name[256];
 
-    long		xcontainer;	// extra data container
+    long        xcontainer; // extra data container
 }Mesh, *MeshPtr;
 typedef struct {
-    int	nd;		// number of data
-    int	sd;		// size in bytes of each datum
-    short	id;		// data ID
-    char	name[256];	// data name
+    int    nd; // number of data
+    int    sd; // size in bytes of each datum
+    short  id;    // data ID
+    char   name[256]; // data name
 
-    char	*data;		// data handle
-    long	xcontainer;	// extra data container
+    char    *data; // data handle
+    long    xcontainer; // extra data container
 }ContainerRec,*ContainerPtr;
 #pragma mark --- Memory Allocation
 char* cvector_new(int size)
